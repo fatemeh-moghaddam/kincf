@@ -5,7 +5,10 @@ build/
 dist/
 wheels/
 *.egg-info
+*.Identifier
+*.python-version
 kinodata-3D-affinity-prediction/
 data/
+
 # Virtual environments
 .venv
