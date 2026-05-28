@@ -17,7 +17,15 @@ from matplotlib.colors import LogNorm
 
 
 def _save_or_show(fig: plt.Figure, save_path: str | Path | None) -> None:
-    """Save figure if path is provided; otherwise show it."""
+    """Save a figure to disk or display it.
+
+    Args:
+        fig: Matplotlib figure to render.
+        save_path: Output path for the figure. If None, the plot is shown.
+
+    Returns:
+        None.
+    """
     if save_path is None:
         plt.show()
     else:
@@ -35,7 +43,19 @@ def plot_histogram(
     log_x: bool = True,
     save_path: str | Path | None = None,
 ) -> None:
-    """Histogram for a degree distribution."""
+    """Plot a histogram from a count/distribution series.
+
+    Args:
+        series: Numeric values to bin and plot.
+        title: Figure title.
+        xlabel: Label for the x-axis.
+        bins: Number of histogram bins.
+        log_x: If True, use logarithmic scale on x-axis.
+        save_path: Output path for the figure. If None, the plot is shown.
+
+    Returns:
+        None.
+    """
     values = series.values.astype(float)
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.hist(values, bins=bins, color="#4C78A8", alpha=0.85, edgecolor="white")
@@ -53,7 +73,17 @@ def plot_rank_frequency(
     ylabel: str,
     save_path: str | Path | None = None,
 ) -> None:
-    """Rank-frequency plot on log-log axes."""
+    """Plot sorted values against rank on log-log axes.
+
+    Args:
+        series: Numeric values to rank in descending order.
+        title: Figure title.
+        ylabel: Label for the y-axis.
+        save_path: Output path for the figure. If None, the plot is shown.
+
+    Returns:
+        None.
+    """
     values = np.sort(series.values)[::-1]
     ranks = np.arange(1, len(values) + 1)
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -72,7 +102,17 @@ def plot_coverage_curve(
     ylabel: str = "Cumulative fraction",
     save_path: str | Path | None = None,
 ) -> None:
-    """Cumulative coverage over sorted counts."""
+    """Plot cumulative coverage of sorted values.
+
+    Args:
+        series: Numeric values sorted internally in descending order.
+        title: Figure title.
+        ylabel: Label for the y-axis.
+        save_path: Output path for the figure. If None, the plot is shown.
+
+    Returns:
+        None.
+    """
     values = np.sort(series.values)[::-1]
     cumulative = np.cumsum(values) / values.sum()
     x = np.arange(1, len(values) + 1)
@@ -90,7 +130,16 @@ def plot_shared_kinase_heatmap(
     top_k: int = 20,
     save_path: str | Path | None = None,
 ) -> pd.DataFrame:
-    """Heatmap of shared ligands between top-k kinases by ligand count."""
+    """Plot overlap heatmap for top kinases and return overlap matrix.
+
+    Args:
+        pairs: DataFrame with at least `ligand_id` and `kinase_id` columns.
+        top_k: Number of most frequent kinases to include.
+        save_path: Output path for the figure. If None, the plot is shown.
+
+    Returns:
+        DataFrame where rows/columns are kinases and values are shared ligand counts.
+    """
     top_kinases = pairs["kinase_id"].value_counts().head(top_k).index
     sub = pairs[pairs["kinase_id"].isin(top_kinases)]
 
@@ -119,7 +168,16 @@ def plot_pair_degree_hexbin(
     gridsize: int = 45,
     save_path: str | Path | None = None,
 ) -> pd.DataFrame:
-    """Hexbin of pair-level degree context."""
+    """Plot pair-level degree landscape and return enriched pair view.
+
+    Args:
+        pairs: DataFrame with at least `ligand_id` and `kinase_id` columns.
+        gridsize: Number of hexagons along the x-axis for hexbin.
+        save_path: Output path for the figure. If None, the plot is shown.
+
+    Returns:
+        DataFrame with original pairs plus ligand/kinase degree columns.
+    """
     mol_deg = pairs.groupby("ligand_id")["kinase_id"].nunique().rename("n_kinases_for_ligand")
     kin_deg = pairs.groupby("kinase_id")["ligand_id"].nunique().rename("n_ligands_for_kinase")
     edge_view = pairs.join(mol_deg, on="ligand_id").join(kin_deg, on="kinase_id")
