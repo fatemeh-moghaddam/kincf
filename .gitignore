@@ -9,6 +9,7 @@ wheels/
 *.python-version
 kinodata-3D-affinity-prediction/
 data/
+CLAUDE.md
 
 # Virtual environments
 .venv
